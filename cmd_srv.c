@@ -10,11 +10,13 @@
 #include <arpa/inet.h>
 #include "TCP_opt.h"
 #include "crypto_opt.h"
+#include "color.h"
 
 #define MAX_RETRYTIME 10
-#define CMD_EXIT      "exit"
 #define CLIENT_SOCKET_UPPER 1000
 #define CLIENT_SOCKET_BASE  900
+#define CMD_EXIT      "exit"
+#define CMD_HELP      "help"
 
 struct incoming_client {
 	int  sockfd;
@@ -28,8 +30,9 @@ struct sock_srv_param {
 	int backlog;
 };
 
-static struct incoming_client *cli_head = NULL;
 static int on_service = 0;
+static struct incoming_client *cli_head = NULL;
+static struct sock_srv_param   ss_p;
 
 void print_usage( void )
 {
@@ -188,12 +191,33 @@ void send2clients( const char *cmd )
 	return;
 }
 
+void display_usage( void )
+{
+	printf( "\nLocal command: ![%scommand%s]\n", BU_BROWN, NONE );
+	printf( "  - %sexit%s: Exit this program.\n", BU_BROWN, NONE );
+	printf( "  - %shelp%s: Display this description.\n", BU_BROWN, NONE );
+	printf( "\n" );
+	return;
+}
+
+void local_functions( const char *cmd )
+{
+	if( strncmp(cmd, CMD_EXIT, strlen(cmd)) == 0 ) {
+		terminate_srv( ss_p.port );
+		clean_client_data();
+		exit(0);
+	} else if( strncmp(cmd, CMD_HELP, strlen(cmd)) == 0 ) {
+		display_usage();
+	}
+
+	return;
+}
+
 int main( int argv, char **argc )
 {
 	int pthd;
 	char cmd[1024], *cmd_ptr;
 	char cmd2client[1024];
-	struct sock_srv_param ss_p;
 	pthread_t sock_srv_t;
 	pthread_attr_t attr;
 
@@ -231,15 +255,7 @@ int main( int argv, char **argc )
 
 		if( cmd[0] == '!' ) {
 			cmd_ptr = &cmd[1];
-
-			if( strncmp(cmd_ptr, CMD_EXIT, sizeof(cmd)) == 0 ) {
-				/* Terminate socket server */
-				terminate_srv( ss_p.port );
-
-				/* Clean all client data */
-				clean_client_data();
-				break;
-			}
+			local_functions( cmd_ptr );
 		} else {
 			strcpy( cmd2client, cmd );
 			send2clients( cmd2client );

@@ -1,4 +1,4 @@
-/* 0->normal, 1->blod, 4->underline, 5->light, 9->strike */
+/* 0->normal, 1->blod, 4->underline, 5->blink, 9->strike */
 #define BLACK     "\033[0;30m"
 #define RED       "\033[0;31m"
 #define GREEN     "\033[0;32m"
@@ -35,6 +35,15 @@
 #define B_MAGENTA "\033[1;35m"
 #define B_CYAN    "\033[1;36m"
 #define B_GRAY    "\033[1;37m"
+
+#define BU_BLACK   "\033[1;4;30m"
+#define BU_RED     "\033[1;4;31m"
+#define BU_GREEN   "\033[1;4;32m"
+#define BU_BROWN   "\033[1;4;33m"
+#define BU_BLUE    "\033[1;4;34m"
+#define BU_MAGENTA "\033[1;4;35m"
+#define BU_CYAN    "\033[1;4;36m"
+#define BU_GRAY    "\033[1;4;37m"
 
 #define S_BLACK   "\033[9;30m"
 #define S_RED     "\033[9;31m"
